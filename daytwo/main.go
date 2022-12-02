@@ -22,9 +22,9 @@ const (
 	ELF_PLAYS_ROCK           = "A"
 	ELF_PLAYS_PAPER          = "B"
 	ELF_PLAYS_SCISSORS       = "C"
-	PLAYER_PLAYS_ROCK        = "X"
-	PLAYER_PLAYS_PAPER       = "Y"
-	PLAYER_PLAYS_SCISSORS    = "Z"
+	PLAYER_MUST_LOSE         = "X"
+	PLAYER_MUST_DRAW         = "Y"
+	PLAYER_MUST_WIN          = "Z"
 )
 
 func main() {
@@ -62,25 +62,25 @@ func processRound(round string) int {
 	playerPlay := plays[1]
 	switch elfPlay {
 	case ELF_PLAYS_ROCK:
-		if playerPlay == PLAYER_PLAYS_PAPER {
+		if playerPlay == PLAYER_MUST_WIN {
 			return PAPER_SELECTED_POINTS + ROUND_WON_POINTS
-		} else if playerPlay == PLAYER_PLAYS_ROCK {
+		} else if playerPlay == PLAYER_MUST_DRAW {
 			return ROCK_SELECTED_POINTS + ROUND_DRAW_POINTS
 		} else {
 			return SCISSORS_SELECTED_POINTS + ROUND_LOST_POINTS
 		}
 	case ELF_PLAYS_PAPER:
-		if playerPlay == PLAYER_PLAYS_SCISSORS {
+		if playerPlay == PLAYER_MUST_WIN {
 			return SCISSORS_SELECTED_POINTS + ROUND_WON_POINTS
-		} else if playerPlay == PLAYER_PLAYS_PAPER {
+		} else if playerPlay == PLAYER_MUST_DRAW {
 			return PAPER_SELECTED_POINTS + ROUND_DRAW_POINTS
 		} else {
 			return ROCK_SELECTED_POINTS + ROUND_LOST_POINTS
 		}
 	case ELF_PLAYS_SCISSORS:
-		if playerPlay == PLAYER_PLAYS_ROCK {
+		if playerPlay == PLAYER_MUST_WIN {
 			return ROCK_SELECTED_POINTS + ROUND_WON_POINTS
-		} else if playerPlay == PLAYER_PLAYS_SCISSORS {
+		} else if playerPlay == PLAYER_MUST_DRAW {
 			return SCISSORS_SELECTED_POINTS + ROUND_DRAW_POINTS
 		} else {
 			return PAPER_SELECTED_POINTS + ROUND_LOST_POINTS

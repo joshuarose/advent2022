@@ -16,7 +16,7 @@ func main() {
 func calculateTotals() int {
 	txtfile, err := os.Open("input.txt")
 	if err != nil {
-		log.Fatalln("Can't open CSV file for calorie inputs")
+		log.Fatalln("Can't open txt file for calorie inputs")
 	}
 
 	txtScanner := bufio.NewScanner(txtfile)

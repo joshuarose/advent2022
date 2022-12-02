@@ -21,7 +21,6 @@ func calculateTotals() int {
 
 	txtScanner := bufio.NewScanner(txtfile)
 	txtScanner.Split(bufio.ScanLines)
-	txtfile.Close()
 
 	calorieRecords := []int{0, 0, 0}
 	currentElfCollection := []int{}
@@ -34,6 +33,7 @@ func calculateTotals() int {
 			currentElfCollection = addElfCalories(value, currentElfCollection)
 		}
 	}
+	txtfile.Close()
 	total := calorieRecords[0] + calorieRecords[1] + calorieRecords[2]
 	return total
 }

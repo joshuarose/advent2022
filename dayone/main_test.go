@@ -38,7 +38,8 @@ func TestAddElfCalories(t *testing.T) {
 
 func TestCalculateTotals(t *testing.T) {
 	total := calculateTotals()
-	if total != 68802 {
-		t.Errorf("Incorrect total, expected %d, received %d", 68802, total)
+	expected := 205370
+	if total != expected {
+		t.Errorf("Incorrect total, expected %d, received %d", expected, total)
 	}
 }

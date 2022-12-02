@@ -15,13 +15,13 @@ func main() {
 
 func calculateTotals() int {
 	txtfile, err := os.Open("input.txt")
-	defer txtfile.Close()
 	if err != nil {
 		log.Fatalln("Can't open CSV file for calorie inputs")
 	}
 
 	txtScanner := bufio.NewScanner(txtfile)
 	txtScanner.Split(bufio.ScanLines)
+	txtfile.Close()
 
 	calorieRecords := []int{0, 0, 0}
 	currentElfCollection := []int{}

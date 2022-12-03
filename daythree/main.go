@@ -24,9 +24,15 @@ func processElfFile() int {
 	txtScanner := bufio.NewScanner(txtfile)
 	txtScanner.Split(bufio.ScanLines)
 	total := 0
+	elfGroup := []string{}
 	for txtScanner.Scan() {
 		line := txtScanner.Text()
-		total += processLine(line)
+		elfGroup = append(elfGroup, line)
+		if len(elfGroup) == 3 {
+			letter := getBadgeType(elfGroup)
+			total += getItemPriority(letter)
+			elfGroup = []string{}
+		}
 	}
 	txtfile.Close()
 	return total
@@ -71,4 +77,20 @@ func getItemPriority(letter string) int {
 		index = index + 27
 	}
 	return index
+}
+
+func getBadgeType(rucksacks []string) string {
+	if len(rucksacks) != 3 {
+		return ""
+	}
+	badgeType := ""
+	for _, v := range rucksacks[0] {
+		existsInTwo := strings.ContainsRune(rucksacks[1], v)
+		existsInThree := strings.ContainsRune(rucksacks[2], v)
+		if existsInTwo && existsInThree {
+			badgeType = string(v)
+		}
+
+	}
+	return badgeType
 }

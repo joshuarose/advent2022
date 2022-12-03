@@ -41,8 +41,37 @@ func TestProcessLine(t *testing.T) {
 
 func TestProcessElfFile(t *testing.T) {
 	result := processElfFile()
-	expected := 8072
+	expected := 2567
 	if result != expected {
 		t.Errorf("expected %d, but received %d", expected, result)
+	}
+}
+
+func TestGetBadgeType(t *testing.T) {
+	cases := []struct {
+		rucksacks []string
+		expected  string
+	}{
+		{rucksacks: []string{
+			"vJrwpWtwJgWrhcsFMMfFFhFp",
+			"jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+			"PmmdzqPrVvPwwTWBwg",
+		}, expected: "r"},
+		{rucksacks: []string{
+			"wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+			"ttgJtRGJQctTZtZT",
+			"CrZsJsPPZsGzwwsLwLmpwMDw",
+		}, expected: "Z"},
+		{rucksacks: []string{
+			"abc",
+			"def",
+		}, expected: ""},
+	}
+
+	for _, tc := range cases {
+		result := getBadgeType(tc.rucksacks)
+		if result != tc.expected {
+			t.Errorf("expected: %s, but received %s", tc.expected, result)
+		}
 	}
 }

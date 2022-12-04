@@ -49,7 +49,7 @@ func TestProcessLine(t *testing.T) {
 	}
 }
 
-func TestCompareSectionPairs(t *testing.T) {
+func TestSectionsFullyOverlap(t *testing.T) {
 	cases := []struct {
 		sectionOne []int
 		sectionTwo []int
@@ -66,11 +66,36 @@ func TestCompareSectionPairs(t *testing.T) {
 		{[]int{9}, []int{1}, false},
 		{[]int{6}, []int{4, 5, 6}, true},
 		{[]int{2, 3, 4, 5, 6, 7, 8}, []int{3, 4, 5, 6, 7}, true},
-		{[]int{3, 4, 5, 6, 7, 8}, []int{13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98}, false},
 		// 3-8,13-98
 	}
 	for _, tc := range cases {
-		result := compareSectionPairs(tc.sectionOne, tc.sectionTwo)
+		result := sectionsFullyOverlap(tc.sectionOne, tc.sectionTwo)
+		if result != tc.expected {
+			t.Errorf("Expected %v but received %v on pairs %v and %v", tc.expected, result, tc.sectionOne, tc.sectionTwo)
+		}
+	}
+}
+
+func TestSectionsPartiallyOverlap(t *testing.T) {
+	cases := []struct {
+		sectionOne []int
+		sectionTwo []int
+		expected   bool
+	}{
+		{[]int{1, 2, 3}, []int{4, 5, 6}, false},
+		{[]int{4, 5, 6}, []int{1, 2, 3}, false},
+		{[]int{2, 3, 4}, []int{1, 2, 3, 4, 5}, true},
+		{[]int{1, 2, 3, 4, 5}, []int{2, 3, 4}, true},
+		{[]int{6, 7, 8, 9, 10}, []int{8}, true},
+		{[]int{99, 98, 97}, []int{97, 98, 99}, true},
+		{[]int{}, []int{}, false},
+		{[]int{1}, []int{1}, true},
+		{[]int{9}, []int{1}, false},
+		{[]int{6}, []int{4, 5, 6}, true},
+		{[]int{10, 11, 12, 13, 14, 15, 16}, []int{15, 16, 17}, true},
+	}
+	for _, tc := range cases {
+		result := sectionsContainOverlap(tc.sectionOne, tc.sectionTwo)
 		if result != tc.expected {
 			t.Errorf("Expected %v but received %v on pairs %v and %v", tc.expected, result, tc.sectionOne, tc.sectionTwo)
 		}
@@ -79,7 +104,7 @@ func TestCompareSectionPairs(t *testing.T) {
 
 func TestProcessElfInput(t *testing.T) {
 	result := processElfInput()
-	if result != 448 {
+	if result != 794 {
 		t.Error("fail")
 	}
 }

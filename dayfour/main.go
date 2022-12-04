@@ -29,7 +29,7 @@ func processElfInput() int {
 		pair := processLine(line)
 		rangeOne := getSectionArray(pair[0])
 		rangeTwo := getSectionArray(pair[1])
-		if compareSectionPairs(rangeOne, rangeTwo) {
+		if sectionsContainOverlap(rangeOne, rangeTwo) {
 			overlapCount += 1
 		}
 	}
@@ -64,7 +64,7 @@ func getSectionArray(dashedSections string) []int {
 	return sectionArr
 }
 
-func compareSectionPairs(pairOne, pairTwo []int) bool {
+func sectionsFullyOverlap(pairOne, pairTwo []int) bool {
 	if len(pairOne) < 1 || len(pairTwo) < 1 {
 		return false
 	}
@@ -81,4 +81,23 @@ func compareSectionPairs(pairOne, pairTwo []int) bool {
 		}
 	}
 	return fullOverlap
+}
+
+func sectionsContainOverlap(pairOne, pairTwo []int) bool {
+	if len(pairOne) < 1 || len(pairTwo) < 1 {
+		return false
+	}
+	partialOverlap := false
+	var smallerPair, largerPair []int
+	if len(pairOne) > len(pairTwo) {
+		smallerPair, largerPair = pairTwo, pairOne
+	} else {
+		smallerPair, largerPair = pairOne, pairTwo
+	}
+	for _, v := range smallerPair {
+		if slices.Contains(largerPair, v) {
+			partialOverlap = true
+		}
+	}
+	return partialOverlap
 }

@@ -11,7 +11,7 @@ jobs:
   golangci:
     strategy:
       matrix:
-        module: ["dayone", "daytwo", "daythree"]
+        module: ["dayone", "daytwo", "daythree", "dayfour"]
     name: lint
     runs-on: ubuntu-latest
     steps:

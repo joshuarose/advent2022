@@ -11,7 +11,7 @@ jobs:
   gotest:
     strategy:
       matrix:
-        module: ["dayone", "daytwo", "daythree", "dayfour"]
+        module: ["dayone", "daytwo", "daythree", "dayfour", "dayfive"]
     name: unit tests
     runs-on: ubuntu-latest
     steps:

@@ -85,7 +85,7 @@ func TestMoveCrates(t *testing.T) {
 	setupWarehouse(warehouseStrings)
 	moveCrates([]int{3, 2, 9})
 	lastRow := warehouse[8]
-	expected := []string{"[H]", "[G]", "[Z]", "[R]", "[C]", "[D]", "[J]", "[F]"}
+	expected := []string{"[H]", "[G]", "[Z]", "[R]", "[C]", "[F]", "[J]", "[D]"}
 	for i, v := range expected {
 		if lastRow[i] != v {
 			t.Errorf("Expected element %s at index %d but received %s", expected[i], i, lastRow[i])
@@ -95,7 +95,7 @@ func TestMoveCrates(t *testing.T) {
 
 func TestProcessWarehouse(t *testing.T) {
 	result := processWarehouse()
-	expected := "TLFGBZHCN"
+	expected := "QRQFHFWCL"
 	if result != expected {
 		t.Errorf("expected %s received %s", expected, result)
 	}

@@ -84,11 +84,9 @@ func moveCrates(instructions []int) {
 	cratesToMove := instructions[0]
 	fromStack := instructions[1] - 1
 	toStack := instructions[2] - 1
-	for i := 0; i < cratesToMove; i++ {
-		topCrate := warehouse[fromStack][len(warehouse[fromStack])-1]
-		warehouse[toStack] = append(warehouse[toStack], topCrate)
-		warehouse[fromStack] = warehouse[fromStack][0 : len(warehouse[fromStack])-1]
-	}
+	crates := warehouse[fromStack][len(warehouse[fromStack])-cratesToMove : len(warehouse[fromStack])]
+	warehouse[toStack] = append(warehouse[toStack], crates...)
+	warehouse[fromStack] = warehouse[fromStack][0 : len(warehouse[fromStack])-cratesToMove]
 }
 
 func setupWarehouse(rows []string) {

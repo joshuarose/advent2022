@@ -1,9 +1,10 @@
 go 1.19
 
 use (
-	./dayfour
 	./dayfive
+	./dayfour
 	./dayone
+	./daysix
 	./daythree
 	./daytwo
 )

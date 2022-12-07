@@ -4,6 +4,7 @@ use (
 	./dayfive
 	./dayfour
 	./dayone
+	./dayseven
 	./daysix
 	./daythree
 	./daytwo

@@ -106,40 +106,24 @@ func processCommandLine(command string) {
 }
 
 func isParentDirectory(command string) bool {
-	if strings.Contains(command, "$ cd ..") {
-		return true
-	}
-	return false
+	return strings.Contains(command, "$ cd ..")
 }
 
 func isRootDirectory(command string) bool {
-	if strings.Contains(command, "$ cd /") {
-		return true
-	}
-	return false
+	return strings.Contains(command, "$ cd /")
 }
 
 func isChangeDirectory(command string) bool {
-	if strings.Contains(command, "$ cd") && !isParentDirectory(command) && !isRootDirectory(command) {
-		return true
-	}
-	return false
+	return strings.Contains(command, "$ cd") && !isParentDirectory(command) && !isRootDirectory(command)
 }
 
 func directoryListing(command string) bool {
-	if strings.Contains(command, "dir") {
-		return true
-	}
-	return false
+	return strings.Contains(command, "dir")
 }
 
 func fileListing(command string) bool {
-	// defensively guard against the list command
-	if command == "$ ls" {
-		return false
-	}
 	// This assumes the only possibility left is file listing
-	return true
+	return command != "$ ls"
 }
 
 func addDirectory(command string) {

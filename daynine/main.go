@@ -90,7 +90,7 @@ func moveHead(direction string, spaces int) {
 		knotPositions[0] = move(knotPositions[0], moveFunc)
 		for i := 1; i < 10; i++ {
 			moveTail(i)
-			printGrid()
+			// printGrid()
 		}
 	}
 }

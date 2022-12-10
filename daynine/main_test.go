@@ -20,7 +20,7 @@ func TestProcessElfFile(t *testing.T) {
 	// 7540 too high
 	// 6801 ?
 	// 6354
-	expected := 2
+	expected := 2651
 	if result != expected {
 		t.Errorf("expected %d, received %d", expected, result)
 	}

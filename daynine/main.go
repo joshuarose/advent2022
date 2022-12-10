@@ -99,6 +99,9 @@ func moveTail() {
 	// the tail must also move one step in that direction so it remains close enough
 
 	// Tail and Head are on same Y axis
+	if isTouching() {
+		return
+	}
 	if headPosition.X == tailPosition.X && headPosition.Y == tailPosition.Y {
 		return
 	}
@@ -180,4 +183,13 @@ func moveDown(p Position) Position {
 
 func move(p Position, f func(p Position) Position) Position {
 	return f(p)
+}
+
+func isTouching() bool {
+	verticalDiff := headPosition.Y - tailPosition.Y
+	horizontalDiff := headPosition.X - tailPosition.X
+	if verticalDiff <= 1 && verticalDiff >= -1 && horizontalDiff <= 1 && horizontalDiff >= -1 {
+		return true
+	}
+	return false
 }

@@ -17,7 +17,8 @@ func TestProcessElfFile(t *testing.T) {
 	// 14073 too high
 	// 8017 too high
 	// 7540 too high
-	expected := 7540
+	// 6801 ?
+	expected := 6801
 	if result != expected {
 		t.Errorf("expected %d, received %d", expected, result)
 	}
@@ -206,8 +207,11 @@ func TestMovement(t *testing.T) {
 	// ......
 	// ......
 	// H.....  (H covers T, s)
+	headPosition = Position{0, 0}
+	tailPosition = Position{0, 0}
 
 	// == R 4 ==
+	moveHead(RIGHT, 4)
 
 	// ......
 	// ......

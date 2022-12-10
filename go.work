@@ -1,7 +1,6 @@
 go 1.19
 
 use (
-	./tester
 	./dayeight
 	./dayfive
 	./dayfour
@@ -9,6 +8,8 @@ use (
 	./dayone
 	./dayseven
 	./daysix
+	./dayten
 	./daythree
 	./daytwo
+	./tester
 )

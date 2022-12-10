@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/exp/slices"
 )
@@ -28,16 +29,15 @@ type Move struct {
 	Spaces    int
 }
 
-var headVisitedPositions []Position
 var tailVisitedPositions []Position
-var startingPosition = Position{0, 0}
-var headPosition = Position{0, 0}
-var tailPosition = Position{0, 0}
+var knotPositions [10]Position
 var fileName = "input.txt"
 
 func init() {
-	headVisitedPositions = append(headVisitedPositions, startingPosition)
-	tailVisitedPositions = append(tailVisitedPositions, startingPosition)
+	for i := 0; i < 10; i++ {
+		knotPositions[i] = Position{0, 0}
+	}
+	tailVisitedPositions = append(tailVisitedPositions, Position{0, 0})
 }
 
 func main() {
@@ -87,88 +87,94 @@ func moveHead(direction string, spaces int) {
 		moveFunc = moveDown
 	}
 	for i := 0; i < spaces; i++ {
-		headPosition = move(headPosition, moveFunc)
-		headVisitedPositions = append(headVisitedPositions, headPosition)
-		moveTail()
+		knotPositions[0] = move(knotPositions[0], moveFunc)
+		for i := 1; i < 10; i++ {
+			moveTail(i)
+			printGrid()
+		}
 	}
 }
 
 // The tail doesn't need direction it just follows the head always touching
-func moveTail() {
+func moveTail(knotIndex int) {
 	// If the head is ever two steps directly up, down, left, or right from the tail,
 	// the tail must also move one step in that direction so it remains close enough
 
+	previousKnot := knotPositions[knotIndex-1]
+	currentKnot := knotPositions[knotIndex]
+
 	// Tail and Head are on same Y axis
-	switch headPosition.Y {
-	case tailPosition.Y:
-		if headPosition.X-tailPosition.X > 1 {
+	switch previousKnot.Y {
+	case currentKnot.Y:
+		if previousKnot.X-currentKnot.X > 1 {
 			//Follow Right
-			tailPosition = Position{tailPosition.X + 1, tailPosition.Y}
-			addTailPosition(tailPosition)
-		} else if headPosition.X-tailPosition.X < -1 {
+			currentKnot = Position{currentKnot.X + 1, currentKnot.Y}
+			addTailPosition(currentKnot, knotIndex)
+		} else if previousKnot.X-currentKnot.X < -1 {
 			// Follow Left
-			tailPosition = Position{tailPosition.X - 1, tailPosition.Y}
-			addTailPosition(tailPosition)
+			currentKnot = Position{currentKnot.X - 1, currentKnot.Y}
+			addTailPosition(currentKnot, knotIndex)
 		}
 		return
 	}
 	// Tail and Head are on same X axis
-	switch headPosition.X {
-	case tailPosition.X:
-		if headPosition.Y-tailPosition.Y < -1 {
+	switch previousKnot.X {
+	case currentKnot.X:
+		if previousKnot.Y-currentKnot.Y < -1 {
 			// Follow Down
-			tailPosition = Position{tailPosition.X, tailPosition.Y - 1}
-			addTailPosition(tailPosition)
-		} else if headPosition.Y-tailPosition.Y > 1 {
+			currentKnot = Position{currentKnot.X, currentKnot.Y - 1}
+			addTailPosition(currentKnot, knotIndex)
+		} else if previousKnot.Y-currentKnot.Y > 1 {
 			// Follow Up
-			tailPosition = Position{tailPosition.X, tailPosition.Y + 1}
-			addTailPosition(tailPosition)
+			currentKnot = Position{currentKnot.X, currentKnot.Y + 1}
+			addTailPosition(currentKnot, knotIndex)
 		}
 		return
 	}
-	if isTouching() {
+	if isTouching(previousKnot, currentKnot) {
 		return
 	}
 	// Otherwise, if the head and tail aren't touching and aren't in the same row or column,
 	// the tail always moves one step diagonally to keep up:
-	if headPosition.X-tailPosition.X == 1 && headPosition.Y-tailPosition.Y == 2 {
+	if previousKnot.X-currentKnot.X >= 1 && previousKnot.Y-currentKnot.Y >= 2 {
 		// move diagonally up and right H{4, 2} T{3, 0}
-		tailPosition = Position{tailPosition.X + 1, tailPosition.Y + 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == 2 && headPosition.Y-tailPosition.Y == 1 {
+		currentKnot = Position{currentKnot.X + 1, currentKnot.Y + 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X >= 2 && previousKnot.Y-currentKnot.Y >= 1 {
 		// move diagonally up and right H{4, 2} T{3, 0}
-		tailPosition = Position{tailPosition.X + 1, tailPosition.Y + 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == -1 && headPosition.Y-tailPosition.Y == -2 {
+		currentKnot = Position{currentKnot.X + 1, currentKnot.Y + 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X <= -1 && previousKnot.Y-currentKnot.Y <= -2 {
 		// move diagonally down and left H{3, 2} T{4, 4}
-		tailPosition = Position{tailPosition.X - 1, tailPosition.Y - 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == -2 && headPosition.Y-tailPosition.Y == -1 {
+		currentKnot = Position{currentKnot.X - 1, currentKnot.Y - 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X <= -2 && previousKnot.Y-currentKnot.Y <= -1 {
 		// move diagonally down and left H{3, 2} T{4, 4}
-		tailPosition = Position{tailPosition.X - 1, tailPosition.Y - 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == 1 && headPosition.Y-tailPosition.Y == -2 {
+		currentKnot = Position{currentKnot.X - 1, currentKnot.Y - 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X >= 1 && previousKnot.Y-currentKnot.Y <= -2 {
 		// move diagonally down and right
-		tailPosition = Position{tailPosition.X + 1, tailPosition.Y - 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == 2 && headPosition.Y-tailPosition.Y == -1 {
+		currentKnot = Position{currentKnot.X + 1, currentKnot.Y - 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X >= 2 && previousKnot.Y-currentKnot.Y <= -1 {
 		// move diagonally down and right
-		tailPosition = Position{tailPosition.X + 1, tailPosition.Y - 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == -2 && headPosition.Y-tailPosition.Y == 1 {
+		currentKnot = Position{currentKnot.X + 1, currentKnot.Y - 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X <= -2 && previousKnot.Y-currentKnot.Y >= 1 {
 		// move diagonally up and left
-		tailPosition = Position{tailPosition.X - 1, tailPosition.Y + 1}
-		addTailPosition(tailPosition)
-	} else if headPosition.X-tailPosition.X == -1 && headPosition.Y-tailPosition.Y == 2 {
+		currentKnot = Position{currentKnot.X - 1, currentKnot.Y + 1}
+		addTailPosition(currentKnot, knotIndex)
+	} else if previousKnot.X-currentKnot.X <= -1 && previousKnot.Y-currentKnot.Y <= 2 {
 		// move diagonally up and left
-		tailPosition = Position{tailPosition.X - 1, tailPosition.Y + 1}
-		addTailPosition(tailPosition)
+		currentKnot = Position{currentKnot.X - 1, currentKnot.Y + 1}
+		addTailPosition(currentKnot, knotIndex)
 	}
 
 }
 
-func addTailPosition(p Position) {
-	if !slices.Contains(tailVisitedPositions, p) {
+func addTailPosition(p Position, index int) {
+	knotPositions[index] = p
+	if !slices.Contains(tailVisitedPositions, p) && index == 9 {
 		tailVisitedPositions = append(tailVisitedPositions, p)
 	}
 }
@@ -193,11 +199,19 @@ func move(p Position, f func(p Position) Position) Position {
 	return f(p)
 }
 
-func isTouching() bool {
-	verticalDiff := headPosition.Y - tailPosition.Y
-	horizontalDiff := headPosition.X - tailPosition.X
+func isTouching(head, tail Position) bool {
+	verticalDiff := head.Y - tail.Y
+	horizontalDiff := head.X - tail.X
 	if verticalDiff <= 1 && verticalDiff >= -1 && horizontalDiff <= 1 && horizontalDiff >= -1 {
 		return true
 	}
 	return false
+}
+
+func printGrid() {
+	for i := 0; i < 10; i++ {
+		fmt.Printf("Knot%d: x:%d y:%d\n", i, knotPositions[i].X, knotPositions[i].Y)
+	}
+	time.Sleep(10 * time.Millisecond)
+	fmt.Print("\033[H\033[2J")
 }

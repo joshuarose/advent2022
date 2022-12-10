@@ -1,88 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strings"
-	"time"
+	"log"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/harmonica"
+	"github.com/gdamore/tcell/v2"
+	"github.com/msoap/tcg"
 )
-
-const (
-	fps       = 60
-	maxHeight = 100
-)
-
-type frameMsg time.Time
-
-func animate() tea.Cmd {
-	return tea.Tick(time.Second/fps, func(t time.Time) tea.Msg {
-		return frameMsg(t)
-	})
-}
-
-func wait(d time.Duration) tea.Cmd {
-	return func() tea.Msg {
-		time.Sleep(d)
-		return nil
-	}
-}
-
-type model struct {
-	projectile *harmonica.Projectile
-	pos        harmonica.Point
-}
-
-func (_ model) Init() tea.Cmd {
-	return tea.Sequentially(wait(time.Second/2), animate())
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg.(type) {
-	case tea.KeyMsg:
-		return m, tea.Quit
-
-	// Step forward one frame
-	case frameMsg:
-		m.pos = m.projectile.Update()
-
-		if m.pos.Y > maxHeight {
-			return m, tea.Quit
-		}
-
-		return m, animate()
-	default:
-		return m, nil
-	}
-}
-
-func (m model) View() string {
-	var out strings.Builder
-
-	for y := 0; y < int(m.pos.Y); y++ {
-		out.WriteString("\n")
-	}
-
-	for x := 0; x < int(m.pos.X); x++ {
-		out.WriteString(" ")
-	}
-	out.WriteString(fmt.Sprintf("(%.2f, %.2f)", m.pos.X, m.pos.Y))
-
-	return out.String()
-}
 
 func main() {
-	initPos := harmonica.Point{X: 0, Y: 0}
-	initVel := harmonica.Vector{X: 5, Y: 0}
-	initAcc := harmonica.TerminalGravity
-	m := model{
-		projectile: harmonica.NewProjectile(harmonica.FPS(fps), initPos, initVel, initAcc),
+	tg, err := tcg.New(tcg.Mode2x3) // each terminal symbol contains a 2x3 pixels grid, also you can use 1x1, 1x2, and 2x2 modes
+	if err != nil {
+		log.Fatalf("create tg: %s", err)
 	}
 
-	if err := tea.NewProgram(m).Start(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+	i := 0
+	for {
+		pixColor := tg.Buf.At(10, 10)       // get color of pixel
+		tg.Buf.Set(11, 11, pixColor)        // draw one pixel with color from 10,10
+		tg.Buf.Line(0, 0, 50, i, tcg.Black) // draw a diagonal line
+		tg.Show()                           // synchronize buffer with screen
+
+		if ev, ok := tg.TCellScreen.PollEvent().(*tcell.EventKey); ok && ev.Rune() == 'q' {
+			break // exit by 'q' key
+		}
+		i++
 	}
+
+	tg.Finish() // finish application and restore screen
 }

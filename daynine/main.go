@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"golang.org/x/exp/slices"
 )
@@ -208,10 +207,10 @@ func isTouching(head, tail Position) bool {
 	return false
 }
 
-func printGrid() {
-	for i := 0; i < 10; i++ {
-		fmt.Printf("Knot%d: x:%d y:%d\n", i, knotPositions[i].X, knotPositions[i].Y)
-	}
-	time.Sleep(10 * time.Millisecond)
-	fmt.Print("\033[H\033[2J")
-}
+// func printGrid() {
+// 	for i := 0; i < 10; i++ {
+// 		fmt.Printf("Knot%d: x:%d y:%d\n", i, knotPositions[i].X, knotPositions[i].Y)
+// 	}
+// 	time.Sleep(10 * time.Millisecond)
+// 	fmt.Print("\033[H\033[2J")
+// }

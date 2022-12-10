@@ -99,19 +99,13 @@ func moveTail() {
 	// the tail must also move one step in that direction so it remains close enough
 
 	// Tail and Head are on same Y axis
-	if isTouching() {
-		return
-	}
-	if headPosition.X == tailPosition.X && headPosition.Y == tailPosition.Y {
-		return
-	}
 	switch headPosition.Y {
 	case tailPosition.Y:
-		if headPosition.X-tailPosition.X > 0 {
+		if headPosition.X-tailPosition.X > 1 {
 			//Follow Right
 			tailPosition = Position{tailPosition.X + 1, tailPosition.Y}
 			addTailPosition(tailPosition)
-		} else if headPosition.X-tailPosition.X < 0 {
+		} else if headPosition.X-tailPosition.X < -1 {
 			// Follow Left
 			tailPosition = Position{tailPosition.X - 1, tailPosition.Y}
 			addTailPosition(tailPosition)
@@ -121,42 +115,56 @@ func moveTail() {
 	// Tail and Head are on same X axis
 	switch headPosition.X {
 	case tailPosition.X:
-		if headPosition.Y-tailPosition.Y < 0 {
+		if headPosition.Y-tailPosition.Y < -1 {
 			// Follow Down
 			tailPosition = Position{tailPosition.X, tailPosition.Y - 1}
 			addTailPosition(tailPosition)
-		} else if headPosition.Y-tailPosition.Y > 0 {
+		} else if headPosition.Y-tailPosition.Y > 1 {
 			// Follow Up
-			tailPosition = Position{tailPosition.X + 1, tailPosition.Y}
+			tailPosition = Position{tailPosition.X, tailPosition.Y + 1}
 			addTailPosition(tailPosition)
 		}
 		return
 	}
-
+	if isTouching() {
+		return
+	}
 	// Otherwise, if the head and tail aren't touching and aren't in the same row or column,
 	// the tail always moves one step diagonally to keep up:
-	allowedMoves := 2
-	movedHorizontally := false
-	for allowedMoves > 0 {
-		if tailPosition.X < headPosition.X && !movedHorizontally {
-			// move right
-			tailPosition = Position{tailPosition.X + 1, tailPosition.Y}
-			movedHorizontally = true
-		} else if tailPosition.X > headPosition.X && !movedHorizontally {
-			// move left
-			tailPosition = Position{tailPosition.X - 1, tailPosition.Y}
-			movedHorizontally = true
-		} else if tailPosition.Y > headPosition.Y {
-			// move down
-			tailPosition = Position{tailPosition.X, tailPosition.Y - 1}
-		} else if tailPosition.Y < headPosition.Y {
-			// move up
-			tailPosition = Position{tailPosition.X, tailPosition.Y + 1}
-		}
-		allowedMoves -= 1
+	if headPosition.X-tailPosition.X == 1 && headPosition.Y-tailPosition.Y == 2 {
+		// move diagonally up and right H{4, 2} T{3, 0}
+		tailPosition = Position{tailPosition.X + 1, tailPosition.Y + 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == 2 && headPosition.Y-tailPosition.Y == 1 {
+		// move diagonally up and right H{4, 2} T{3, 0}
+		tailPosition = Position{tailPosition.X + 1, tailPosition.Y + 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == -1 && headPosition.Y-tailPosition.Y == -2 {
+		// move diagonally down and left H{3, 2} T{4, 4}
+		tailPosition = Position{tailPosition.X - 1, tailPosition.Y - 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == -2 && headPosition.Y-tailPosition.Y == -1 {
+		// move diagonally down and left H{3, 2} T{4, 4}
+		tailPosition = Position{tailPosition.X - 1, tailPosition.Y - 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == 1 && headPosition.Y-tailPosition.Y == -2 {
+		// move diagonally down and right
+		tailPosition = Position{tailPosition.X + 1, tailPosition.Y - 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == 2 && headPosition.Y-tailPosition.Y == -1 {
+		// move diagonally down and right
+		tailPosition = Position{tailPosition.X + 1, tailPosition.Y - 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == -2 && headPosition.Y-tailPosition.Y == 1 {
+		// move diagonally up and left
+		tailPosition = Position{tailPosition.X - 1, tailPosition.Y + 1}
+		addTailPosition(tailPosition)
+	} else if headPosition.X-tailPosition.X == -1 && headPosition.Y-tailPosition.Y == 2 {
+		// move diagonally up and left
+		tailPosition = Position{tailPosition.X - 1, tailPosition.Y + 1}
+		addTailPosition(tailPosition)
 	}
-	addTailPosition(tailPosition)
-	return
+
 }
 
 func addTailPosition(p Position) {

@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func clearState() {
@@ -18,7 +20,8 @@ func TestProcessElfFile(t *testing.T) {
 	// 8017 too high
 	// 7540 too high
 	// 6801 ?
-	expected := 6801
+	// 6354
+	expected := 6354
 	if result != expected {
 		t.Errorf("expected %d, received %d", expected, result)
 	}
@@ -201,6 +204,7 @@ func TestAddTailPosition(t *testing.T) {
 }
 
 func TestMovement(t *testing.T) {
+	then := assert.New(t)
 	// == Initial State ==
 	// ......
 	// ......
@@ -236,8 +240,11 @@ func TestMovement(t *testing.T) {
 	// ......
 	// ......
 	// s..TH.
+	then.Equal(tailPosition, Position{3, 0})
+	then.Equal(headPosition, Position{4, 0})
 
 	// == U 4 ==
+	moveHead(UP, 4)
 
 	// ......
 	// ......
@@ -262,9 +269,11 @@ func TestMovement(t *testing.T) {
 	// ......
 	// ......
 	// s.....
+	then.Equal(Position{4, 3}, tailPosition)
+	then.Equal(Position{4, 4}, headPosition)
 
 	// == L 3 ==
-
+	moveHead(LEFT, 3)
 	// ...H..
 	// ....T.
 	// ......
@@ -282,17 +291,21 @@ func TestMovement(t *testing.T) {
 	// ......
 	// ......
 	// s.....
+	then.Equal(Position{2, 4}, tailPosition)
+	then.Equal(Position{1, 4}, headPosition)
 
 	// == D 1 ==
+	moveHead(DOWN, 1)
 
 	// ..T...
 	// .H....
 	// ......
 	// ......
 	// s.....
-
+	then.Equal(Position{2, 4}, tailPosition)
+	then.Equal(Position{1, 3}, headPosition)
 	// == R 4 ==
-
+	moveHead(RIGHT, 4)
 	// ..T...
 	// ..H...
 	// ......
@@ -316,17 +329,20 @@ func TestMovement(t *testing.T) {
 	// ......
 	// ......
 	// s.....
+	then.Equal(Position{4, 3}, tailPosition)
+	then.Equal(Position{5, 3}, headPosition)
 
 	// == D 1 ==
-
+	moveHead(DOWN, 1)
 	// ......
 	// ....T.
 	// .....H
 	// ......
 	// s.....
-
+	then.Equal(Position{4, 3}, tailPosition)
+	then.Equal(Position{5, 2}, headPosition)
 	// == L 5 ==
-
+	moveHead(LEFT, 5)
 	// ......
 	// ....T.
 	// ....H.
@@ -356,9 +372,11 @@ func TestMovement(t *testing.T) {
 	// HT....
 	// ......
 	// s.....
+	then.Equal(Position{1, 2}, tailPosition)
+	then.Equal(Position{0, 2}, headPosition)
 
 	// == R 2 ==
-
+	moveHead(RIGHT, 2)
 	// ......
 	// ......
 	// .H....  (H covers T)
@@ -370,4 +388,6 @@ func TestMovement(t *testing.T) {
 	// .TH...
 	// ......
 	// s.....
+	then.Equal(Position{1, 2}, tailPosition)
+	then.Equal(Position{2, 2}, headPosition)
 }

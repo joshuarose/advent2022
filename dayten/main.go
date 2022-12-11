@@ -10,39 +10,27 @@ import (
 	"sync"
 )
 
-const (
-	LISTEN_CYCLE_COUNT   = 5
-	INITIAL_LISTEN_CYCLE = 20
-	CYCLE_LISTEN_GAP     = 40
-)
-
 // var cycle int
 var fileName = "input.txt"
 var cmdLength = 144
-var mainValue *ValueX
+var pw *PixelWriter
 var commands []string
-var cmdQueue string
-var listenCycles [LISTEN_CYCLE_COUNT + 1]int
-var signalPoints []int
+var rows [6]string
 
-type ValueX struct {
+type PixelWriter struct {
 	sync.Mutex
-	value int
+	headIndex int
 }
 
-func (v *ValueX) UpdateValue(modifier int) {
-	v.value += modifier
+func (v *PixelWriter) UpdateValue(modifier int) {
+	v.headIndex += modifier
 }
 
 func init() {
-	listenCycles[0] = INITIAL_LISTEN_CYCLE
-	listenCycles[1] = INITIAL_LISTEN_CYCLE + CYCLE_LISTEN_GAP
-	for i := LISTEN_CYCLE_COUNT - 3; i <= LISTEN_CYCLE_COUNT; i++ {
-		listenCycles[i] = listenCycles[i-1] + CYCLE_LISTEN_GAP
+	pw = &PixelWriter{
+		headIndex: 1,
 	}
-	mainValue = &ValueX{
-		value: 1,
-	}
+	rows = [6]string{}
 }
 
 func main() {
@@ -64,57 +52,83 @@ func processElfFile() int {
 		}
 	}
 	cmdFile.Close()
-	commandIndex := 0
-	for i := 1; i < 2000; i++ {
-		showValue(i)
-		if cmdQueue != "" {
-			processModifyRegister()
-		} else {
-			if commandIndex < cmdLength-1 {
-				enqueueCommand(commands[commandIndex])
-				commandIndex += 1
-			}
-		}
-	}
+	getScreenOutput()
 	totalPoints := 0
-	for _, v := range signalPoints {
-		totalPoints += v
+	for _, v := range rows {
+		fmt.Println(v)
 	}
 	return totalPoints
 }
 
-func enqueueCommand(command string) {
-	if command == "noop" {
-		return
+func getScreenOutput() {
+	cycle := 1
+	currentRow := 0
+	currentColumn := 0
+	modifier := 0
+	for _, cmd := range commands {
+		iterator := 1
+		if cmd != "noop" {
+			iterator = 2
+			modifier, _ = strconv.Atoi(strings.Split(cmd, " ")[1])
+		}
+		for i := 0; i < iterator; i++ {
+			pixel := "."
+			switch pw.headIndex {
+			case currentColumn - 1:
+				pixel = "#"
+			case currentColumn:
+				pixel = "#"
+			case currentColumn + 1:
+				pixel = "#"
+			}
+
+			rows[currentRow] += pixel
+			cycle += 1
+			currentColumn += 1
+
+			if currentColumn > 39 {
+				currentColumn = 0
+				currentRow += 1
+			}
+		}
+		pw.UpdateValue(modifier)
 	}
-	cmdQueue = strings.ReplaceAll(command, "addx ", "")
 }
 
-func processModifyRegister() {
-	mod, _ := strconv.Atoi(cmdQueue)
-	mainValue.UpdateValue(mod)
-	cmdQueue = ""
-}
+// func enqueueCommand(command string) {
+// 	if command == "noop" {
+// 		return
+// 	} else {
+// 		cmdQueue = strings.ReplaceAll(command, "addx ", "")
+// 	}
+// }
 
-func showValue(cycle int) {
-	switch cycle {
-	case 20:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	case 60:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	case 100:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	case 140:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	case 180:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	case 220:
-		fmt.Printf("CYCLE:%d VALUE:%d\n", cycle, mainValue.value*cycle)
-		signalPoints = append(signalPoints, mainValue.value*cycle)
-	}
-}
+// func processModifyRegister() {
+// 	mod, _ := strconv.Atoi(cmdQueue)
+// 	pw.UpdateValue(mod)
+// 	cmdQueue = ""
+// }
+
+// func print(cycle int, sprite bool) {
+// 	if cycle <= 240 {
+// 		if !sprite {
+// 			fmt.Print(" ")
+// 		} else {
+// 			fmt.Println("#")
+// 		}
+// 		switch cycle {
+// 		case 40:
+// 			fmt.Println()
+// 		case 80:
+// 			fmt.Println()
+// 		case 120:
+// 			fmt.Println()
+// 		case 160:
+// 			fmt.Println()
+// 		case 200:
+// 			fmt.Println()
+// 		case 240:
+// 			fmt.Println()
+// 		}
+// 	}
+// }

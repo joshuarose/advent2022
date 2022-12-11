@@ -1,9 +1,16 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestMain(t *testing.T) {
-	if 1+1 != 2 {
-		t.Fail()
+func TestProcessFile(t *testing.T) {
+	fileName = "test.txt"
+	cmdLength = 146
+	result := processElfFile()
+	// 10160
+	expected := 13140
+	if result != expected {
+		t.Errorf("expected %d received %d", expected, result)
 	}
 }
